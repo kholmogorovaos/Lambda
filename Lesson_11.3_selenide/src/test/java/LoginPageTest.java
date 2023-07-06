@@ -1,8 +1,6 @@
-import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.codeborne.selenide.Condition;
-import org.openqa.selenium.By;
 import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.text;
@@ -11,49 +9,54 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class LoginPageTest {
     private final String pageUrl = "https://www.saucedemo.com";
-    private final String logoText = "Swag Labs";
-    private SelenideElement usernameField = $("#user-name");
-    private SelenideElement passwordField = $("#password");
-    private SelenideElement loginButton = $(".btn_action");
+    private final String pageUrls = "http://the-internet.herokuapp.com/dynamic_loading/1";
+    private final String logoTexts = "Hello World";
+
 
     @Test
     @DisplayName ("Test for lesson 11.3_1 - Проверка открытия страницы www.saucedemo.com")
     public void LoginPage() {
         open(pageUrl);
 
-        $x(".//*[contains(@class, 'login_logo')]").shouldBe(Condition.visible).shouldHave(text(logoText));
+        LoginPageActions loginPageActions = new LoginPageActions();
+        assert loginPageActions.isLoginPageDisplayed();
+
     }
 
     @Test
     @DisplayName ("Test for lesson 11.3_2 - Проверка переходов по кнопкам страницы www.saucedemo.com")
     public void checkingPage() {
+        LoginPageActions loginPageActions = new LoginPageActions();
+        ProductPage productPage = new ProductPage();
 
-        LoginPageTest loginPage = open(pageUrl, LoginPageTest.class);
+        open(pageUrl);
 
-        loginPage.login("standard_user", "secret_sauce");
+        loginPageActions.login("standard_user", "secret_sauce");
 
-        ProductPageTest productsPage = page(ProductPageTest.class);
+        assert productPage.isDisplayed();
 
-        assert productsPage.isDisplayed();
+        assert productPage.burgerIsDisplayed();
 
-        assert productsPage.burgerButton.isDisplayed();
+        productPage.openBurgerMenu();
 
-        productsPage.openBurgerMenu();
+        assert productPage.isLogoutButtonDisplayed();
 
-        assert productsPage.isLogoutButtonDisplayed();
+        productPage.logout();
 
-        productsPage.logout();
-
-        assert loginPage.isLoginPageDisplayed();
+        assert loginPageActions.isLoginPageDisplayed();
     }
-    public void login(String username, String password) {
-        usernameField.setValue(username);
-        passwordField.setValue(password);
-        loginButton.click();
+
+    @Test
+    @DisplayName("Test for lesson 11.3_4 - Проверка загрузки страницы the-internet.herokuapp.com/dynamic_loading/1")
+
+    public void testDynamicLoading() {
+        open(pageUrls);
+
+        $("#finish").shouldNotHave(Condition.text(logoTexts));
+
+        $("#start > button").click();
+
+        $("#finish").shouldBe(visible, Duration.ofSeconds(40)).shouldHave(text(logoTexts));
     }
-    public boolean isLoginPageDisplayed() {
-        return  $(By.xpath(".//*[contains(@class, 'login_logo')]"))
-                 .shouldBe(visible, Duration.ofSeconds(20)).shouldHave(text(logoText))
-                 .isDisplayed();
-    }
+
 }
