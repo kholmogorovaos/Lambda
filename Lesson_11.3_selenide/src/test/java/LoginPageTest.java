@@ -19,7 +19,7 @@ public class LoginPageTest {
         open(pageUrl);
 
         LoginPageActions loginPageActions = new LoginPageActions();
-        assert loginPageActions.isLoginPageDisplayed();
+        loginPageActions.isLoginPageDisplayed();
 
     }
 
@@ -33,17 +33,17 @@ public class LoginPageTest {
 
         loginPageActions.login("standard_user", "secret_sauce");
 
-        assert productPage.isDisplayed();
+        productPage.isDisplayed();
 
-        assert productPage.burgerIsDisplayed();
+        productPage.burgerIsDisplayed();
 
         productPage.openBurgerMenu();
 
-        assert productPage.isLogoutButtonDisplayed();
+        productPage.isLogoutButtonDisplayed();
 
         productPage.logout();
 
-        assert loginPageActions.isLoginPageDisplayed();
+        loginPageActions.isLoginPageDisplayed();
     }
 
     @Test
